@@ -33,18 +33,21 @@ document.addEventListener("DOMContentLoaded", () => {
         const firstHead = firstLayer[0];
         console.log("First head matrix:", firstHead);
 
-        // Determine matrix dimensions.
-        const numRows = firstHead.length;
-        const numCols = firstHead[0].length; // assuming rectangular matrix
-
-        // Generate dummy token labels for rows.
-        const tokens = Array.from({ length: numRows }, (_, i) => "Token " + i);
+        // Use the tokens returned from the backend.
+        // For example: ['[CLS]', 'banana', '##n', '[SEP]']
+        const tokens = data.tokens;
+        const seqLength = firstHead.length; // Should be 12.
+        // Fill in any missing tokens with "[PAD]"
+        const fullTokens = tokens.concat(
+          Array(seqLength - tokens.length).fill("[PAD]")
+        );
+        console.log("Full tokens used for labels:", fullTokens);
 
         // Clear previous visualization.
         visualizationDiv.innerHTML = "";
 
         // Draw the heatmap using the alternative data join approach.
-        drawHeatmapUsingDataJoin(firstHead, tokens);
+        drawHeatmapUsingDataJoin(firstHead, fullTokens);
       })
       .catch((error) => {
         console.error("Error fetching attention data:", error);
@@ -75,10 +78,11 @@ function getCellsFromMatrix(matrix) {
 /**
  * Draws a heatmap using D3.js and the data join pattern.
  * Adds tooltips and a simple legend.
+ * In this version, fullTokens (actual tokens + [PAD] if needed) are used for both column and row labels.
  * @param {Array} matrix - 2D array (rows x cols) of attention scores.
- * @param {Array} tokens - Array of token strings for labeling rows.
+ * @param {Array} fullTokens - Array of token strings (length equal to matrix dimensions).
  */
-function drawHeatmapUsingDataJoin(matrix, tokens) {
+function drawHeatmapUsingDataJoin(matrix, fullTokens) {
   console.log("Drawing heatmap using data join approach...");
 
   // Convert the matrix to an array of cell objects.
@@ -89,8 +93,9 @@ function drawHeatmapUsingDataJoin(matrix, tokens) {
   const numRows = matrix.length;
   const numCols = matrix[0].length;
   const cellSize = 25;
-  const width = cellSize * numCols;
-  const height = cellSize * numRows;
+  const gap = 32; // gap between cells
+  const width = numCols * (cellSize + gap) - gap;
+  const height = numRows * (cellSize + gap) - gap;
 
   // Compute dynamic domain for the color scale.
   const flatValues = cells.map((d) => d.value);
@@ -131,8 +136,8 @@ function drawHeatmapUsingDataJoin(matrix, tokens) {
     .data(cells)
     .enter()
     .append("rect")
-    .attr("x", (d) => d.col * cellSize)
-    .attr("y", (d) => d.row * cellSize)
+    .attr("x", (d) => d.col * (cellSize + gap))
+    .attr("y", (d) => d.row * (cellSize + gap))
     .attr("width", cellSize)
     .attr("height", cellSize)
     .style("fill", (d) => colorScale(d.value))
@@ -150,30 +155,29 @@ function drawHeatmapUsingDataJoin(matrix, tokens) {
       tooltip.transition().duration(500).style("opacity", 0);
     });
 
-  // Add row labels.
+  // Add column labels using fullTokens.
+  svg
+    .selectAll(".colLabel")
+    .data(fullTokens)
+    .enter()
+    .append("text")
+    .text((d) => d)
+    .attr("x", (d, i) => i * (cellSize + gap) + cellSize / 2)
+    .attr("y", -5)
+    .style("text-anchor", "middle")
+    .style("font-size", "16px");
+
+  // Add row labels using fullTokens.
   svg
     .selectAll(".rowLabel")
-    .data(tokens)
+    .data(fullTokens)
     .enter()
     .append("text")
     .text((d) => d)
     .attr("x", -5)
-    .attr("y", (d, i) => i * cellSize + cellSize / 1.5)
+    .attr("y", (d, i) => i * (cellSize + gap) + cellSize / 1.5)
     .style("text-anchor", "end")
-    .style("font-size", "10px");
-
-  // Add column labels.
-  const colLabels = Array.from({ length: numCols }, (_, i) => "Col " + i);
-  svg
-    .selectAll(".colLabel")
-    .data(colLabels)
-    .enter()
-    .append("text")
-    .text((d) => d)
-    .attr("x", (d, i) => i * cellSize + cellSize / 2)
-    .attr("y", -5)
-    .style("text-anchor", "middle")
-    .style("font-size", "10px");
+    .style("font-size", "16px");
 
   // Add a simple legend.
   addLegend(d3.select("#visualization"), colorScale, minValue, maxValue);
@@ -230,14 +234,14 @@ function addLegend(container, colorScale, minValue, maxValue) {
     .append("text")
     .attr("x", 0)
     .attr("y", legendHeight + 25)
-    .style("font-size", "10px")
+    .style("font-size", "16px")
     .text(minValue.toFixed(3));
 
   legend
     .append("text")
     .attr("x", legendWidth)
     .attr("y", legendHeight + 25)
-    .style("font-size", "10px")
+    .style("font-size", "16px")
     .style("text-anchor", "end")
     .text(maxValue.toFixed(3));
 }

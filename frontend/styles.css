@@ -16,10 +16,12 @@ body {
   
 
 #visualization {
+    margin-top: 1.53rem;
+    padding: 1.5rem;
     background-color: #282a36; /* Dracula dark background */
     color: #f8f8f2;            /* Light text color */
     border: 1px solid #6272a4; /* A contrasting border */
-    padding: 1rem;
+
     border-radius: 4px;
   }
   
