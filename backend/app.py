@@ -1,8 +1,16 @@
-# backend/app.py
 from flask import Flask, request, jsonify
 from inference import run_inference_with_cache
+from flask_cors import CORS
 
 app = Flask(__name__)
+
+CORS(
+    app,
+    origins=["http://127.0.0.1:5500", "https://127.0.0.1:5500"],
+    allow_headers="*",
+    supports_credentials=True,
+    methods=["GET", "POST", "OPTIONS"]
+)
 
 @app.route('/get_attention', methods=['POST'])
 def get_attention():
