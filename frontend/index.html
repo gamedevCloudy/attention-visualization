@@ -7,18 +7,24 @@
     <link rel="stylesheet" href="styles.css" />
     <!-- Include D3.js from CDN -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <!-- Pico CSS from CDN -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css"
+    />
   </head>
   <body>
-    <h1>Attention Visualization</h1>
-    <textarea
-      id="inputText"
-      rows="4"
-      cols="50"
-      placeholder="Enter text here..."
-    ></textarea>
-    <br />
-    <button id="submitButton">Fetch Attention Data</button>
-    <div id="visualization">Your attention data will appear here.</div>
+    <main class="container">
+      <h1>Attention Visualization</h1>
+      <textarea
+        id="inputText"
+        rows="4"
+        cols="50"
+        placeholder="Enter text here..."
+      ></textarea>
+      <button id="submitButton">Fetch Attention Data</button>
+      <div id="visualization">Your attention data will appear here.</div>
+    </main>
 
     <!-- Link to your JavaScript file -->
     <script src="script.js"></script>
