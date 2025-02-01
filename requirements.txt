@@ -1,0 +1,5 @@
+torch
+transformers
+flask
+uvicorn
+python-dotenv
