@@ -7,7 +7,8 @@ def load_model():
 
     model = DistilBertModel.from_pretrained(
         "distilbert-base-uncased",
-        output_attentions=True
+        output_attentions=True, 
+        attn_implementation="eager"
     )
 
     model.eval()
