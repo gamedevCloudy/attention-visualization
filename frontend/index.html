@@ -4,7 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Attention Visualization</title>
-    <script src="script.js" defer></script>
+    <link rel="stylesheet" href="styles.css" />
+    <!-- Include D3.js from CDN -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
   </head>
   <body>
     <h1>Attention Visualization</h1>
@@ -13,9 +15,12 @@
       rows="4"
       cols="50"
       placeholder="Enter text here..."
-    ></textarea
-    ><br />
-    <button id="submitButton">Get Attention Data</button>
-    <div id="visualization"></div>
+    ></textarea>
+    <br />
+    <button id="submitButton">Fetch Attention Data</button>
+    <div id="visualization">Your attention data will appear here.</div>
+
+    <!-- Link to your JavaScript file -->
+    <script src="script.js"></script>
   </body>
 </html>
